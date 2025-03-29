@@ -19,7 +19,6 @@ var (
 	longFlag    *bool
 )
 
-// askCmd represents the ask command
 var askCmd = &cobra.Command{
 	Use:   "ask",
 	Short: "간단한 질문 수행",
@@ -57,14 +56,4 @@ func init() {
 	longFlag = askCmd.Flags().BoolP("long", "l", false, "긴 입력이 필요하다면, 해당 옵션을 입력해주세요. 명령어 인자로 들어간 입력은 무시됩니다.")
 
 	rootCmd.AddCommand(askCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// askCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// askCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
