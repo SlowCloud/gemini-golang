@@ -12,16 +12,8 @@ export GEMINI_API_KEY=<your gemini api key>
 
 ## Install
 
-### Linux
-
 ```shell
-git clone github.com/SlowCloud/gemini-golang
-go build
-```
-
-```shell
-mkdir ~/bin
-mv gemini-golang ~/bin
+go install github.com/SlowCloud/gemini-golang@latest
 ```
 
 ## 기능
