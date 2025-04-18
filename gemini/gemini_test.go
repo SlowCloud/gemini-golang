@@ -1,16 +1,22 @@
 package gemini_test
 
 import (
+	"log"
 	"testing"
 
 	"github.com/SlowCloud/gemini-golang/gemini"
 )
 
-func TestGeminiCreate(t *testing.T) {
+func createGemini() *gemini.Gemini {
 	gemini, err := gemini.New()
 	if err != nil {
-		t.Fatal(err)
+		log.Fatal(err)
 	}
+	return gemini
+}
+
+func TestGeminiCreate(t *testing.T) {
+	gemini := createGemini()
 	if gemini == nil {
 		t.FailNow()
 	}
