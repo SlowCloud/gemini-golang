@@ -24,6 +24,9 @@ func TestGeminiCreate(t *testing.T) {
 }
 
 func TestGeminiAsk(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping " + t.Name())
+	}
 	gemini := createGemini()
 	msg, err := gemini.Ask("hello!")
 	if err != nil {
