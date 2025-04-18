@@ -34,6 +34,17 @@ func TestCreateChatSession(t *testing.T) {
 	createChatSession(gemini)
 }
 
+func TestChatSessionChat(t *testing.T) {
+	gemini := createGemini()
+	chatSession := createChatSession(gemini)
+	msg, err := chatSession.Chat("hello!")
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println("ask: hello!")
+	fmt.Println("res: " + msg)
+}
+
 func createGemini() *gemini.Gemini {
 	gemini, err := gemini.New()
 	if err != nil {

@@ -38,7 +38,16 @@ func (gemini *Gemini) Ask(words string) (string, error) {
 }
 
 type ChatSession struct {
-	client *genai.Chat
+	chat *genai.Chat
+}
+
+func (c *ChatSession) Chat(text string) (string, error) {
+	ctx := context.Background()
+	res, err := c.chat.SendMessage(ctx, genai.Part{Text: text})
+	if err != nil {
+		return "", err
+	}
+	return res.Text(), nil
 }
 
 func (gemini *Gemini) CreateChat() (*ChatSession, error) {
@@ -47,7 +56,7 @@ func (gemini *Gemini) CreateChat() (*ChatSession, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ChatSession{client: chat}, nil
+	return &ChatSession{chat: chat}, nil
 }
 
 func init() {
