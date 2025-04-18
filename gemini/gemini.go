@@ -29,7 +29,7 @@ func New() (*Gemini, error) {
 	return &Gemini{client: client, ctx: ctx}, nil
 }
 
-func (gemini *Gemini) Generate(words string) (string, error) {
+func (gemini *Gemini) Ask(words string) (string, error) {
 	result, err := gemini.client.Models.GenerateContent(gemini.ctx, defaultModel, genai.Text(words), nil)
 	if err != nil {
 		return "", err

@@ -37,7 +37,7 @@ var askCmd = &cobra.Command{
 			words = strings.Join(args, " ")
 		}
 
-		answer, err := geminiModel.Generate(words)
+		answer, err := geminiModel.Ask(words)
 		if err != nil {
 			log.Fatal(err)
 		}
