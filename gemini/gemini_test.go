@@ -35,6 +35,7 @@ func TestCreateChatSession(t *testing.T) {
 }
 
 func TestChatSessionChat(t *testing.T) {
+	skipShort(t)
 	gemini := createGemini()
 	chatSession := createChatSession(gemini)
 	msg, err := chatSession.Chat("hello!")
