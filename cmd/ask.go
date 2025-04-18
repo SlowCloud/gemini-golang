@@ -48,7 +48,7 @@ var askCmd = &cobra.Command{
 func init() {
 
 	var err error
-	geminiModel, err = gemini.NewGemini()
+	geminiModel, err = gemini.New()
 	if err != nil {
 		log.Fatal(err)
 	}

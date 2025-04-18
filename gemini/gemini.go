@@ -17,7 +17,7 @@ type Gemini struct {
 	ctx    context.Context
 }
 
-func NewGemini() (*Gemini, error) {
+func New() (*Gemini, error) {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  apiKey,
