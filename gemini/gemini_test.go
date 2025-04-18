@@ -42,3 +42,11 @@ func TestGeminiAsk(t *testing.T) {
 	fmt.Println("ask: hello!")
 	fmt.Println("answer: " + msg)
 }
+
+func TestCreateChatSession(t *testing.T) {
+	gemini := createGemini()
+	chat, err := gemini.CreateChat()
+	if err != nil || chat == nil {
+		t.Fail()
+	}
+}

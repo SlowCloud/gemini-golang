@@ -14,7 +14,6 @@ var (
 
 type Gemini struct {
 	client *genai.Client
-	ctx    context.Context
 }
 
 func New() (*Gemini, error) {
@@ -26,15 +25,29 @@ func New() (*Gemini, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Gemini{client: client, ctx: ctx}, nil
+	return &Gemini{client: client}, nil
 }
 
 func (gemini *Gemini) Ask(words string) (string, error) {
-	result, err := gemini.client.Models.GenerateContent(gemini.ctx, defaultModel, genai.Text(words), nil)
+	ctx := context.Background()
+	result, err := gemini.client.Models.GenerateContent(ctx, defaultModel, genai.Text(words), nil)
 	if err != nil {
 		return "", err
 	}
 	return result.Text(), nil
+}
+
+type ChatSession struct {
+	client *genai.Chat
+}
+
+func (gemini *Gemini) CreateChat() (*ChatSession, error) {
+	ctx := context.Background()
+	chat, err := gemini.client.Chats.Create(ctx, defaultModel, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	return &ChatSession{client: chat}, nil
 }
 
 func init() {
