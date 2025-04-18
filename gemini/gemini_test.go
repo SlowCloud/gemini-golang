@@ -16,6 +16,12 @@ func createGemini() *gemini.Gemini {
 	return gemini
 }
 
+func skipShort(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skip " + t.Name() + " in short mode")
+	}
+}
+
 func TestGeminiCreate(t *testing.T) {
 	gemini := createGemini()
 	if gemini == nil {
@@ -24,9 +30,7 @@ func TestGeminiCreate(t *testing.T) {
 }
 
 func TestGeminiAsk(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping " + t.Name())
-	}
+	skipShort(t)
 	gemini := createGemini()
 	msg, err := gemini.Ask("hello!")
 	if err != nil {
