@@ -11,7 +11,7 @@ import (
 func TestGeminiCreate(t *testing.T) {
 	gemini := createGemini()
 	if gemini == nil {
-		t.FailNow()
+		t.Fatal("Failed to create Gemini instance")
 	}
 }
 
@@ -20,7 +20,7 @@ func TestGeminiAsk(t *testing.T) {
 	gemini := createGemini()
 	msg, err := gemini.Ask("hello!")
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Ask failed: %v", err)
 	}
 	if len(msg) == 0 {
 		t.Fail()
@@ -56,7 +56,7 @@ func createGemini() *gemini.Gemini {
 
 func skipShort(t *testing.T) {
 	if testing.Short() {
-		t.Skip("skip " + t.Name() + " in short mode")
+		t.Skipf("Skipping test %s in short mode", t.Name())
 	}
 }
 
