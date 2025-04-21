@@ -20,6 +20,7 @@ type (
 
 type Model struct {
 	gemini      *gemini.Gemini
+	session     *gemini.ChatSession
 	messages    []string
 	viewport    viewport.Model
 	textarea    textarea.Model
@@ -41,13 +42,19 @@ func New(gemini *gemini.Gemini) Model {
 	ta.ShowLineNumbers = false
 
 	vp := viewport.New(30, 5)
-	vp.SetContent(`gemini 채팅입니다!
-자유롭게 메시지를 입력하시고 ctrl+e 를 눌러 대화하세요.`)
+	ta.Placeholder = `gemini 채팅입니다!
+자유롭게 메시지를 입력하시고 ctrl+e 를 눌러 대화하세요.`
 
 	ta.KeyMap.InsertNewline.SetEnabled(true)
 
+	session, err := gemini.CreateChat()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return Model{
 		gemini:   gemini,
+		session:  session,
 		messages: []string{},
 		viewport: vp,
 		textarea: ta,
@@ -56,9 +63,7 @@ func New(gemini *gemini.Gemini) Model {
 
 func (m Model) Init() tea.Cmd {
 	log.Println("initializing chat model...")
-	return tea.Batch(
-		textarea.Blink,
-	)
+	return textarea.Blink
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -70,6 +75,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	m.textarea, tiCmd = m.textarea.Update(msg)
 	m.viewport, vpCmd = m.viewport.Update(msg)
+
+	cmds := []tea.Cmd{tiCmd, vpCmd}
 
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
@@ -89,25 +96,49 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		// case tea.KeyEnter:
 		case tea.KeyCtrlE:
-			m.messages = append(m.messages, m.senderStyle.Render("You: ")+m.textarea.Value())
+			text := m.textarea.Value()
+			m.messages = append(m.messages, m.senderStyle.Render("You: ")+text)
 			m.viewport.SetContent(lipgloss.NewStyle().Width(m.viewport.Width).Render(strings.Join(m.messages, "\n")))
 			m.textarea.Reset()
 			m.viewport.GotoBottom()
+			cmds = append(cmds, m.createGeminiCmd(text))
 		}
+	case geminiCmd:
+		text := string(msg)
+		m.messages = append(m.messages, m.senderStyle.Render("Gemini: ")+text)
+		m.viewport.SetContent(lipgloss.NewStyle().Width(m.viewport.Width).Render(strings.Join(m.messages, "\n")))
+		if !m.textarea.Focused() {
+			m.textarea.Focus()
+		}
+		m.viewport.GotoBottom()
 
 	// We handle errors just like any other message
 	case errMsg:
 		m.err = msg
 		return m, nil
+
 	}
 
-	return m, tea.Batch(tiCmd, vpCmd)
+	return m, tea.Batch(cmds...)
 }
 
 func (m Model) View() string {
-	return ""
+	return fmt.Sprintf(
+		"%s%s%s",
+		m.viewport.View(),
+		gap,
+		m.textarea.View(),
+	)
 }
 
-func geminiCmd() tea.Msg {
-	return nil
+type geminiCmd string
+
+func (m Model) createGeminiCmd(text string) tea.Cmd {
+	return func() tea.Msg {
+		msg, err := m.session.Chat(text)
+		if err != nil {
+			log.Fatal(err)
+		}
+		return geminiCmd(msg)
+	}
 }
