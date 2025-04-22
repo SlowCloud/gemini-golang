@@ -12,10 +12,14 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-const gap = "\n\n"
+const gap = "\n"
 
 type (
 	errMsg error
+)
+
+var (
+	userChatRenderer lipgloss.Style = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("63"))
 )
 
 type Model struct {
@@ -29,24 +33,12 @@ type Model struct {
 }
 
 func New(gemini *gemini.Gemini) Model {
-	ta := textarea.New()
-	ta.Placeholder = "내용을 입력해주세요."
-	ta.Focus()
+	// textarea
+	ta := newTextarea()
+	// viewport
+	vp := newViewport()
 
-	ta.Prompt = "| "
-
-	ta.SetWidth(30)
-	ta.SetHeight(3)
-
-	ta.FocusedStyle.CursorLine = lipgloss.NewStyle()
-	ta.ShowLineNumbers = false
-
-	vp := viewport.New(30, 5)
-	ta.Placeholder = `gemini 채팅입니다!
-자유롭게 메시지를 입력하시고 ctrl+e 를 눌러 대화하세요.`
-
-	ta.KeyMap.InsertNewline.SetEnabled(true)
-
+	// gemini session sttings
 	session, err := gemini.CreateChat()
 	if err != nil {
 		log.Fatal(err)
@@ -59,6 +51,35 @@ func New(gemini *gemini.Gemini) Model {
 		viewport: vp,
 		textarea: ta,
 	}
+}
+
+func newViewport() viewport.Model {
+	vp := viewport.New(30, 5)
+
+	vp.Style = lipgloss.NewStyle().
+		Border(lipgloss.RoundedBorder())
+	return vp
+}
+
+func newTextarea() textarea.Model {
+	ta := textarea.New()
+
+	// textarea style
+	ta.FocusedStyle.Base = lipgloss.NewStyle().
+		Border(lipgloss.RoundedBorder())
+	ta.ShowLineNumbers = false
+
+	// textarea sttings
+	ta.Focus()
+	ta.SetWidth(30)
+	ta.SetHeight(3)
+	ta.Placeholder = "내용을 입력해주세요."
+	ta.Prompt = "  "
+	ta.Placeholder = `gemini 채팅입니다!
+자유롭게 메시지를 입력하시고 ctrl+e 를 눌러 대화하세요.`
+	ta.KeyMap.InsertNewline.SetEnabled(true)
+
+	return ta
 }
 
 func (m Model) Init() tea.Cmd {
@@ -97,10 +118,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// case tea.KeyEnter:
 		case tea.KeyCtrlE:
 			text := m.textarea.Value()
-			m.messages = append(m.messages, m.senderStyle.Render("You: ")+text)
+			m.messages = append(m.messages, userChatRenderer.Render(m.senderStyle.Render("You: ")+text))
 			m.viewport.SetContent(lipgloss.NewStyle().Width(m.viewport.Width).Render(strings.Join(m.messages, "\n")))
 			m.textarea.Reset()
 			m.viewport.GotoBottom()
+			m.textarea.Blur()
 			cmds = append(cmds, m.createGeminiCmd(text))
 		}
 	case geminiCmd:
