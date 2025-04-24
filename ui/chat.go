@@ -106,7 +106,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.viewport.Height = msg.Height - m.textarea.Height() - lipgloss.Height(gap)
 
 		if len(m.messages) > 0 {
-			// Wrap content before setting it.
 			m.viewport.SetContent(lipgloss.NewStyle().Width(m.viewport.Width).Render(strings.Join(m.messages, "\n")))
 		}
 		m.viewport.GotoBottom()
@@ -136,11 +135,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		m.viewport.GotoBottom()
 
-	// We handle errors just like any other message
 	case errMsg:
 		m.err = msg
 		return m, nil
-
 	}
 
 	return m, tea.Batch(cmds...)
