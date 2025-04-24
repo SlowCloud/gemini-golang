@@ -118,12 +118,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// case tea.KeyEnter:
 		case tea.KeyCtrlE:
 			text := m.textarea.Value()
-			m.messages = append(m.messages, userChatRenderer.Render(m.senderStyle.Render("You: ")+text))
-			m.viewport.SetContent(lipgloss.NewStyle().Width(m.viewport.Width).Render(strings.Join(m.messages, "\n")))
-			m.textarea.Reset()
-			m.viewport.GotoBottom()
-			m.textarea.Blur()
-			cmds = append(cmds, m.createGeminiCmd(text))
+			if len(text) != 0 {
+				m.messages = append(m.messages, userChatRenderer.Render(m.senderStyle.Render("You: ")+text))
+				m.viewport.SetContent(lipgloss.NewStyle().Width(m.viewport.Width).Render(strings.Join(m.messages, "\n")))
+				m.textarea.Reset()
+				m.viewport.GotoBottom()
+				m.textarea.Blur()
+				cmds = append(cmds, m.createGeminiCmd(text))
+			}
 		}
 	case geminiCmd:
 		text := string(msg)
