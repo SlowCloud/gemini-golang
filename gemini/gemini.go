@@ -4,12 +4,8 @@ import (
 	"context"
 	"os"
 
+	configuration "github.com/SlowCloud/gemini-golang/config"
 	"google.golang.org/genai"
-)
-
-var (
-	defaultModel string
-	apiKey       string
 )
 
 type Gemini struct {
@@ -19,7 +15,7 @@ type Gemini struct {
 func New() (*Gemini, error) {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
-		APIKey:  apiKey,
+		APIKey:  os.Getenv(configuration.DefaultApiKeyEnviromentVariable),
 		Backend: genai.BackendGeminiAPI,
 	})
 	if err != nil {
@@ -30,7 +26,7 @@ func New() (*Gemini, error) {
 
 func (gemini *Gemini) Ask(words string) (string, error) {
 	ctx := context.Background()
-	result, err := gemini.client.Models.GenerateContent(ctx, defaultModel, genai.Text(words), nil)
+	result, err := gemini.client.Models.GenerateContent(ctx, configuration.DefaultGeminiModel, genai.Text(words), nil)
 	if err != nil {
 		return "", err
 	}
@@ -52,14 +48,9 @@ func (c *ChatSession) Chat(text string) (string, error) {
 
 func (gemini *Gemini) CreateChat() (*ChatSession, error) {
 	ctx := context.Background()
-	chat, err := gemini.client.Chats.Create(ctx, defaultModel, nil, nil)
+	chat, err := gemini.client.Chats.Create(ctx, configuration.DefaultGeminiModel, nil, nil)
 	if err != nil {
 		return nil, err
 	}
 	return &ChatSession{chat: chat}, nil
-}
-
-func init() {
-	defaultModel = "gemini-2.0-flash-exp"
-	apiKey = os.Getenv("GEMINI_API_KEY")
 }

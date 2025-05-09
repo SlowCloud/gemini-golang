@@ -5,6 +5,7 @@ import (
 	"log"
 	"strings"
 
+	configuration "github.com/SlowCloud/gemini-golang/config"
 	"github.com/SlowCloud/gemini-golang/gemini"
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/viewport"
@@ -72,7 +73,7 @@ func newTextarea() textarea.Model {
 	// textarea sttings
 	ta.Focus()
 	ta.SetWidth(30)
-	ta.SetHeight(3)
+	ta.SetHeight(configuration.TextareaSize)
 	ta.Placeholder = "내용을 입력해주세요."
 	ta.Prompt = "  "
 	ta.Placeholder = `gemini 채팅입니다!
