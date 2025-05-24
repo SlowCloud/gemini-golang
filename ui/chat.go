@@ -11,6 +11,7 @@ import (
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"google.golang.org/genai"
 )
 
 const gap = "\n"
@@ -24,8 +25,8 @@ var (
 )
 
 type Model struct {
-	gemini      *gemini.Gemini
-	session     *gemini.ChatSession
+	client      *genai.Client
+	session     *genai.Chat
 	messages    []string
 	viewport    viewport.Model
 	textarea    textarea.Model
@@ -33,20 +34,25 @@ type Model struct {
 	err         error
 }
 
-func New(gemini *gemini.Gemini) Model {
+func New() Model {
 	// textarea
 	ta := newTextarea()
 	// viewport
 	vp := newViewport()
 
-	// gemini session sttings
-	session, err := gemini.CreateChat()
+	// gemini client sttings
+	client, err := gemini.New()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	session, err := gemini.CreateChatSession(client)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	return Model{
-		gemini:   gemini,
+		client:   client,
 		session:  session,
 		messages: []string{},
 		viewport: vp,
@@ -157,7 +163,7 @@ type geminiCmd string
 
 func (m Model) createGeminiCmd(text string) tea.Cmd {
 	return func() tea.Msg {
-		msg, err := m.session.Chat(text)
+		msg, err := gemini.Chat(m.session, text)
 		if err != nil {
 			log.Fatal(err)
 		}

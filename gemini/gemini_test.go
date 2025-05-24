@@ -6,10 +6,11 @@ import (
 	"testing"
 
 	"github.com/SlowCloud/gemini-golang/gemini"
+	"google.golang.org/genai"
 )
 
 func TestGeminiCreate(t *testing.T) {
-	gemini := createGemini()
+	gemini := createClient()
 	if gemini == nil {
 		t.Fatal("Failed to create Gemini instance")
 	}
@@ -17,8 +18,8 @@ func TestGeminiCreate(t *testing.T) {
 
 func TestGeminiAsk(t *testing.T) {
 	skipShort(t)
-	gemini := createGemini()
-	msg, err := gemini.Ask("hello!")
+	client := createClient()
+	msg, err := gemini.Ask(client, "hello!")
 	if err != nil {
 		t.Fatalf("Ask failed: %v", err)
 	}
@@ -30,15 +31,15 @@ func TestGeminiAsk(t *testing.T) {
 }
 
 func TestCreateChatSession(t *testing.T) {
-	gemini := createGemini()
-	createChatSession(gemini)
+	client := createClient()
+	createChatSession(client)
 }
 
 func TestChatSessionChat(t *testing.T) {
 	skipShort(t)
-	gemini := createGemini()
-	chatSession := createChatSession(gemini)
-	msg, err := chatSession.Chat("hello!")
+	client := createClient()
+	chatSession := createChatSession(client)
+	msg, err := gemini.Chat(chatSession, "hello!")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -46,12 +47,12 @@ func TestChatSessionChat(t *testing.T) {
 	fmt.Println("res: " + msg)
 }
 
-func createGemini() *gemini.Gemini {
-	gemini, err := gemini.New()
+func createClient() *genai.Client {
+	client, err := gemini.New()
 	if err != nil {
 		log.Fatal(err)
 	}
-	return gemini
+	return client
 }
 
 func skipShort(t *testing.T) {
@@ -60,8 +61,8 @@ func skipShort(t *testing.T) {
 	}
 }
 
-func createChatSession(gemini *gemini.Gemini) *gemini.ChatSession {
-	chat, err := gemini.CreateChat()
+func createChatSession(client *genai.Client) *genai.Chat {
+	chat, err := gemini.CreateChatSession(client)
 	if err != nil {
 		log.Fatal(err)
 	}
