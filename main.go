@@ -1,18 +1,16 @@
-/*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-*/
 package main
 
+// promptui 버리고 huh로 바꿔보기
+
 import (
-	"bufio"
 	"context"
 	"fmt"
 	"log"
 	"os"
-	"strings"
 	"time"
 
 	configuration "github.com/SlowCloud/gemini-golang/config"
+	"github.com/charmbracelet/huh"
 	"github.com/manifoldco/promptui"
 	"google.golang.org/genai"
 )
@@ -22,26 +20,48 @@ func main() {
 menuLoop:
 	for {
 
-		prompt := promptui.Select{
-			Label: "This is Menu",
-			Items: []string{
-				"start chat",
-				"select chat",
-				"exit",
-			},
-		}
+		// prompt := promptui.Select{
+		// 	Label: "This is Menu",
+		// 	Items: []string{
+		// 		"start chat",
+		// 		"select chat",
+		// 		"exit",
+		// 	},
+		// }
+		// _, result, err := prompt.Run()
+		// if err != nil {
+		// 	panic(err)
+		// }
+		// switch result {
+		// case "start chat":
+		// 	chat()
+		// case "exit":
+		// 	break menuLoop
+		// }
 
-		_, result, err := prompt.Run()
-		if err != nil {
-			panic(err)
-		}
+		var selected string
+		form := huh.NewForm(
+			huh.NewGroup(
+				huh.NewSelect[string]().
+					Title("Gemini-Golang Menu").
+					Options(
+						huh.NewOption("start chat", "start chat"),
+						huh.NewOption("select chat", "select chat"),
+						huh.NewOption("exit", "exit"),
+					).
+					Value(&selected),
+			),
+		)
 
-		switch result {
+		form.Run()
+
+		switch selected {
 		case "start chat":
 			chat()
 		case "exit":
 			break menuLoop
 		}
+
 	}
 
 }
@@ -63,16 +83,13 @@ func chat() {
 	}
 	defer cancel()
 
-	scanner := bufio.NewScanner(os.Stdin)
-
 	for {
 
-		fmt.Print("> ")
-		if !scanner.Scan() {
-			break
+		prompt := promptui.Prompt{}
+		s, err := prompt.Run()
+		if err != nil {
+			panic(err)
 		}
-
-		s := strings.TrimSpace(scanner.Text())
 
 		if s == "/exit" {
 			break
