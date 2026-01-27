@@ -12,10 +12,16 @@ Gemini CLI와 비교했을 때, 최소 기능만이 구현되어 있어
 AI Key는 [Google AI Studio](https://aistudio.google.com/api-keys)에서
 발급이 가능합니다.
 
-### linux
+### Linux
 
-```shell
-export GOOGLE_API_KEY=<your gemini api key>
+```bash
+export GOOGLE_API_KEY=YOUR_GEMINI_API_KEY
+```
+
+### Windows
+
+```powershell
+$env:GOOGLE_API_KEY=YOUR_GEMINI_API_KEY
 ```
 
 ## Install
@@ -23,6 +29,7 @@ export GOOGLE_API_KEY=<your gemini api key>
 ```shell
 go install github.com/SlowCloud/gemini-golang@latest
 ```
+
 
 ## Roadmap
 
