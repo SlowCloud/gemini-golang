@@ -4,11 +4,13 @@ Copyright © 2025 NAME HERE <EMAIL ADDRESS>
 package main
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -44,11 +46,16 @@ func main() {
 		os.Exit(0)
 	}()
 
+	scanner := bufio.NewScanner(os.Stdin)
+
 	for {
 
-		var s string
 		fmt.Print("> ")
-		fmt.Scan(&s)
+		if !scanner.Scan() {
+			break
+		}
+
+		s := strings.TrimSpace(scanner.Text())
 
 		ctx, cancel = context.WithTimeout(background, 1*time.Minute)
 		iter := chat.SendMessageStream(ctx, genai.Part{Text: s})
