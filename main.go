@@ -20,14 +20,14 @@ func main() {
 
 	background := context.Background()
 
-	ctx, cancel := context.WithTimeout(background, 5*time.Second)
+	ctx, cancel := context.WithTimeout(background, 10*time.Second)
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{APIKey: os.Getenv(configuration.DefaultApiKeyEnviromentVariable)})
 	if err != nil {
 		panic(err)
 	}
 	defer cancel()
 
-	ctx, cancel = context.WithTimeout(background, 5*time.Second)
+	ctx, cancel = context.WithTimeout(background, 10*time.Second)
 	chat, err := client.Chats.Create(ctx, "gemini-2.5-flash", nil, nil)
 	if err != nil {
 		panic(err)
