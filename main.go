@@ -11,7 +11,6 @@ import (
 
 	configuration "github.com/SlowCloud/gemini-golang/config"
 	"github.com/charmbracelet/huh"
-	"github.com/manifoldco/promptui"
 	"google.golang.org/genai"
 )
 
@@ -20,38 +19,15 @@ func main() {
 menuLoop:
 	for {
 
-		// prompt := promptui.Select{
-		// 	Label: "This is Menu",
-		// 	Items: []string{
-		// 		"start chat",
-		// 		"select chat",
-		// 		"exit",
-		// 	},
-		// }
-		// _, result, err := prompt.Run()
-		// if err != nil {
-		// 	panic(err)
-		// }
-		// switch result {
-		// case "start chat":
-		// 	chat()
-		// case "exit":
-		// 	break menuLoop
-		// }
-
 		var selected string
-		form := huh.NewForm(
-			huh.NewGroup(
-				huh.NewSelect[string]().
-					Title("Gemini-Golang Menu").
-					Options(
-						huh.NewOption("start chat", "start chat"),
-						huh.NewOption("select chat", "select chat"),
-						huh.NewOption("exit", "exit"),
-					).
-					Value(&selected),
-			),
-		)
+		form := huh.NewSelect[string]().
+			Title("Gemini-Golang Menu").
+			Options(
+				huh.NewOption("start chat", "start chat"),
+				huh.NewOption("select chat", "select chat"),
+				huh.NewOption("exit", "exit"),
+			).
+			Value(&selected)
 
 		form.Run()
 
@@ -85,11 +61,16 @@ func chat() {
 
 	for {
 
-		prompt := promptui.Prompt{}
-		s, err := prompt.Run()
-		if err != nil {
-			panic(err)
-		}
+		var s string
+
+		// 텍스트를 밖으로 뱉는 방식이 아니라 참조 방식인 게 좀 그렇네
+		// 도움말 띄울 수 있으면 좋을 것 같은데.
+		form := huh.NewText().
+			Title("입력").Description("escape: /exit").Value(&s)
+
+		form.Run()
+
+		fmt.Println("> " + s)
 
 		if s == "/exit" {
 			break
