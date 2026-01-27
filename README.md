@@ -1,13 +1,18 @@
 # gemini-golang
 
-CLI로 gemini에게 빠르게 뭔가 물어볼 때 사용하려고 만들었습니다.
+터미널 환경에서 Gemini AI와 채팅할 수 있는 도구입니다.
+
+Gemini CLI와 비교했을 때, 최소 기능만이 구현되어 있어
+훨씬 가볍고 빠르게 채팅을 시작하고 진행할 수 있습니다.
 
 ## Setup
+
+사용을 위해, 환경 변수 설정이 필요합니다.
 
 ### linux
 
 ```shell
-export GEMINI_API_KEY=<your gemini api key>
+export GOOGLE_API_KEY=<your gemini api key>
 ```
 
 ## Install
@@ -16,28 +21,13 @@ export GEMINI_API_KEY=<your gemini api key>
 go install github.com/SlowCloud/gemini-golang@latest
 ```
 
-## 기능
-
-### `gemini-golang ask`
-
-단편적인 질문과 응답이 가능합니다.
-
-- `--long`, `-l`
-  - 긴 입력을 넣을 수 있습니다.
-  - 윈도우의 경우엔 `Ctrl+Z`, 리눅스는 `Ctrl+D`를 누르면 입력이 종료됩니다.
-
 ## Roadmap
 
-- [ ] 유즈케이스 골라내기
-- [ ] 설계 재진행하기
-- [ ] gemini 전용 기능 활용하기
+- 채팅 저장 및 조회 기능
+- 저장된 채팅을 선택하여 이어서 채팅을 진행하는 기능
+- Gemini 모델 선택 기능
+- Gemini 이외의 AI 모델 활용 기능
 
 ## reference
 
 https://pkg.go.dev/google.golang.org/genai
-
-## etc.
-
-간단하게 만들 줄 알았는데 생각보다 추가하고 싶은 기능이 많아서? 커맨드가 그리 편한 것 같지 않아서? 더 다듬어봐야 할 것 같습니다.
-
-개발은 설계부터 🫠
