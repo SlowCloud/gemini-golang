@@ -9,17 +9,44 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/signal"
 	"strings"
-	"syscall"
 	"time"
 
 	configuration "github.com/SlowCloud/gemini-golang/config"
+	"github.com/manifoldco/promptui"
 	"google.golang.org/genai"
 )
 
 func main() {
 
+menuLoop:
+	for {
+
+		prompt := promptui.Select{
+			Label: "This is Menu",
+			Items: []string{
+				"start chat",
+				"select chat",
+				"exit",
+			},
+		}
+
+		_, result, err := prompt.Run()
+		if err != nil {
+			panic(err)
+		}
+
+		switch result {
+		case "start chat":
+			chat()
+		case "exit":
+			break menuLoop
+		}
+	}
+
+}
+
+func chat() {
 	background := context.Background()
 
 	ctx, cancel := context.WithTimeout(background, 10*time.Second)
@@ -36,16 +63,6 @@ func main() {
 	}
 	defer cancel()
 
-	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-
-	go func() {
-		<-sigChan
-		fmt.Println()
-		fmt.Println("채팅을 종료합니다.")
-		os.Exit(0)
-	}()
-
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
@@ -56,6 +73,10 @@ func main() {
 		}
 
 		s := strings.TrimSpace(scanner.Text())
+
+		if s == "/exit" {
+			break
+		}
 
 		ctx, cancel = context.WithTimeout(background, 1*time.Minute)
 		iter := chat.SendMessageStream(ctx, genai.Part{Text: s})
@@ -72,5 +93,4 @@ func main() {
 		fmt.Println()
 
 	}
-
 }
