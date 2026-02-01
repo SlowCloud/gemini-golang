@@ -58,13 +58,17 @@ func chat() {
 			break
 		}
 
-		ch, err := goChat.ChatStream(s)
-		if err != nil {
-			panic(err)
-		}
+		ch, errCh := goChat.ChatStream(s)
 
-		for tok := range ch {
-			fmt.Print(tok)
+	chatLoop:
+		for {
+			select {
+			case tok := <-ch:
+				fmt.Print(tok)
+			case err := <-errCh:
+				fmt.Println("Error:", err)
+				break chatLoop
+			}
 		}
 
 		fmt.Println()
