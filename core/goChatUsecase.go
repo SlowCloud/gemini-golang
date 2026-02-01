@@ -37,18 +37,24 @@ func (g goChatUsecase) Chat(text string) string {
 	panic("unimplemented")
 }
 
-func (g goChatUsecase) ChatStream(text string) (<-chan string, error) {
+func (g goChatUsecase) ChatStream(text string) (<-chan string, <-chan error) {
 	iter := g.chat.SendMessageStream(context.TODO(), genai.Part{Text: text})
 
 	outputChan := make(chan string)
+	errChan := make(chan error, 1)
 	go func() {
 		defer close(outputChan)
-		for tok := range iter {
+		for tok, err := range iter {
+			if err != nil {
+				errChan <- err
+				close(errChan)
+				return
+			}
 			outputChan <- tok.Text()
 		}
 	}()
 
-	return outputChan, nil
+	return outputChan, errChan
 }
 
 var _ ChatUsecase = goChatUsecase{}
