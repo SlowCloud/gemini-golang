@@ -1,6 +1,6 @@
 package core
 
 type ChatUsecase interface {
-	chat(text string) string
-	chatStream(text string) (<-chan string, error)
+	Chat(text string) string
+	ChatStream(text string) (<-chan string, error)
 }
