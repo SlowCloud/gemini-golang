@@ -3,15 +3,10 @@ package main
 // promptui 버리고 huh로 바꿔보기
 
 import (
-	"context"
 	"fmt"
-	"log"
-	"os"
-	"time"
 
-	configuration "github.com/SlowCloud/gemini-golang/config"
+	"github.com/SlowCloud/gemini-golang/core"
 	"github.com/charmbracelet/huh"
-	"google.golang.org/genai"
 )
 
 func main() {
@@ -43,21 +38,8 @@ menuLoop:
 }
 
 func chat() {
-	background := context.Background()
 
-	ctx, cancel := context.WithTimeout(background, 10*time.Second)
-	client, err := genai.NewClient(ctx, &genai.ClientConfig{APIKey: os.Getenv(configuration.DefaultApiKeyEnviromentVariable)})
-	if err != nil {
-		panic(err)
-	}
-	defer cancel()
-
-	ctx, cancel = context.WithTimeout(background, 10*time.Second)
-	chat, err := client.Chats.Create(ctx, "gemini-2.5-flash", nil, nil)
-	if err != nil {
-		panic(err)
-	}
-	defer cancel()
+	goChat := core.NewGoChatUsecase()
 
 	for {
 
@@ -76,19 +58,15 @@ func chat() {
 			break
 		}
 
-		ctx, cancel = context.WithTimeout(background, 1*time.Minute)
-		iter := chat.SendMessageStream(ctx, genai.Part{Text: s})
-
-		for tok, err := range iter {
-			if err != nil {
-				log.Fatal(err)
-			}
-			fmt.Print(tok.Text())
+		ch, err := goChat.ChatStream(s)
+		if err != nil {
+			panic(err)
 		}
 
-		cancel()
+		for tok := range ch {
+			fmt.Print(tok)
+		}
 
 		fmt.Println()
-
 	}
 }
