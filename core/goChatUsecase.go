@@ -2,10 +2,8 @@ package core
 
 import (
 	"context"
-	"os"
 	"time"
 
-	configuration "github.com/SlowCloud/gemini-golang/config"
 	"google.golang.org/genai"
 )
 
@@ -17,7 +15,7 @@ func NewGoChatUsecase() ChatUsecase {
 	background := context.Background()
 
 	ctx, cancel := context.WithTimeout(background, 10*time.Second)
-	client, err := genai.NewClient(ctx, &genai.ClientConfig{APIKey: os.Getenv(configuration.DefaultApiKeyEnviromentVariable)})
+	client, err := genai.NewClient(ctx, &genai.ClientConfig{})
 	if err != nil {
 		panic(err)
 	}
