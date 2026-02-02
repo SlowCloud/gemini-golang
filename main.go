@@ -45,8 +45,6 @@ func chat() {
 
 		var s string
 
-		// 텍스트를 밖으로 뱉는 방식이 아니라 참조 방식인 게 좀 그렇네
-		// 도움말 띄울 수 있으면 좋을 것 같은데.
 		form := huh.NewText().
 			Title("입력").Description("escape: /exit").Value(&s)
 
