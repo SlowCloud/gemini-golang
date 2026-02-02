@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
 	"google.golang.org/genai"
@@ -9,6 +10,17 @@ import (
 
 type goChatUsecase struct {
 	chat *genai.Chat
+}
+
+func (g goChatUsecase) GetHistory() ([]byte, error) {
+	history := g.chat.History(false)
+
+	b, err := json.Marshal(history)
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
 }
 
 func NewGoChatUsecase() ChatUsecase {

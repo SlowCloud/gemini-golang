@@ -4,6 +4,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"time"
 
 	"github.com/SlowCloud/gemini-golang/core"
 	"github.com/charmbracelet/huh"
@@ -42,7 +44,6 @@ func chat() {
 	goChat := core.NewGoChatUsecase()
 
 	for {
-
 		var s string
 
 		form := huh.NewText().
@@ -71,4 +72,16 @@ func chat() {
 
 		fmt.Println()
 	}
+
+	history, err := goChat.GetHistory()
+	if err != nil {
+		fmt.Println("Error getting history:", err)
+		return
+	}
+
+	now := time.Now().Local().Format("2006-01-02_15:04:05")
+	filename := fmt.Sprintf("chat_history-%s.txt", now)
+
+	os.WriteFile(filename, history, 0644)
+
 }
