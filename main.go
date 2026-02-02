@@ -52,6 +52,10 @@ func chat() {
 
 		form.Run()
 
+		if s == "" {
+			break
+		}
+
 		fmt.Println("> " + s)
 
 		if s == "/exit" {
@@ -63,7 +67,10 @@ func chat() {
 	chatLoop:
 		for {
 			select {
-			case tok := <-ch:
+			case tok, ok := <-ch:
+				if !ok {
+					break chatLoop
+				}
 				fmt.Print(tok)
 			case err := <-errCh:
 				fmt.Println("Error:", err)
