@@ -54,10 +54,10 @@ func (g goChatUsecase) ChatStream(text string) (<-chan string, <-chan error) {
 	errChan := make(chan error, 1)
 	go func() {
 		defer close(outputChan)
+		defer close(errChan)
 		for tok, err := range iter {
 			if err != nil {
 				errChan <- err
-				close(errChan)
 				return
 			}
 			outputChan <- tok.Text()
