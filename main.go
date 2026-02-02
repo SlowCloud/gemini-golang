@@ -5,6 +5,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/SlowCloud/gemini-golang/core"
@@ -79,9 +80,20 @@ func chat() {
 		return
 	}
 
-	now := time.Now().Local().Format("2006-01-02_15:04:05")
+	now := time.Now().Local().Format("2006-01-02_150405")
 	filename := fmt.Sprintf("chat_history-%s.txt", now)
 
-	os.WriteFile(filename, history, 0644)
+	dir, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Error getting working directory:", err)
+		return
+	}
+	err = os.WriteFile(filepath.Join(dir, filename), history, 0644)
+	if err != nil {
+		fmt.Println("Error writing history to file:", err)
+		return
+	}
+
+	fmt.Println("Chat history saved to", filename, "path ", dir)
 
 }
