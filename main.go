@@ -62,18 +62,11 @@ func chat() {
 
 		ch, errCh := goChat.ChatStream(s)
 
-	chatLoop:
-		for {
-			select {
-			case tok, ok := <-ch:
-				if !ok {
-					break chatLoop
-				}
-				fmt.Print(tok)
-			case err := <-errCh:
-				fmt.Println("Error:", err)
-				break chatLoop
-			}
+		for tok := range ch {
+			fmt.Print(tok)
+		}
+		if err := <-errCh; err != nil {
+			fmt.Println("Error:", err)
 		}
 
 		fmt.Println()
