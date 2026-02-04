@@ -3,6 +3,9 @@ package core
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"os"
+	"path/filepath"
 	"time"
 
 	"google.golang.org/genai"
@@ -12,15 +15,32 @@ type goChatUsecase struct {
 	chat *genai.Chat
 }
 
-func (g goChatUsecase) GetHistory() ([]byte, error) {
+func (g goChatUsecase) SaveHistory() error {
 	history := g.chat.History(false)
 
 	b, err := json.Marshal(history)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return b, nil
+	now := time.Now().Local().Format("2006-01-02_150405")
+	filename := fmt.Sprintf("chat_history-%s.txt", now)
+
+	dir, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Error getting working directory:", err)
+		return err
+	}
+
+	err = os.WriteFile(filepath.Join(dir, filename), b, 0644)
+	if err != nil {
+		fmt.Println("Error writing history to file:", err)
+		return err
+	}
+
+	fmt.Println("Chat history saved to", filename, "path ", dir)
+
+	return nil
 }
 
 func NewGoChatUsecase() ChatUsecase {
