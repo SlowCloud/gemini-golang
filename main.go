@@ -11,7 +11,10 @@ import (
 
 func main() {
 
-menuLoop:
+	actions := map[string]func(){
+		"start chat": chat,
+	}
+
 	for {
 
 		var selected string
@@ -26,11 +29,12 @@ menuLoop:
 
 		form.Run()
 
-		switch selected {
-		case "start chat":
-			chat()
-		case "exit":
-			break menuLoop
+		if selected == "exit" {
+			break
+		}
+
+		if action, ok := actions[selected]; ok {
+			action()
 		}
 
 	}
