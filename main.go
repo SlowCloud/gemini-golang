@@ -78,18 +78,21 @@ func chat() {
 		fmt.Println()
 	}
 
-	err := saveHistory(goChat)
+	history, err := goChat.GetHistory()
+	if err != nil {
+		panic(err)
+	}
+	err = saveHistory(history)
 	if err != nil {
 		panic(err)
 	}
 
 }
 
-func saveHistory(goChat core.ChatUsecase) error {
-	history, err := goChat.GetHistory()
-	if err != nil {
-		fmt.Println("Error getting history:", err)
-		return err
+func saveHistory(history []byte) error {
+	if history == nil {
+		fmt.Println("No history to save")
+		return nil
 	}
 
 	now := time.Now().Local().Format("2006-01-02_150405")
