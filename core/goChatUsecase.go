@@ -24,6 +24,10 @@ func (g goChatUsecase) GetHistory() ([]byte, error) {
 }
 
 func NewGoChatUsecase() ChatUsecase {
+	return NewGoChatUsecaseWithHistory(nil)
+}
+
+func NewGoChatUsecaseWithHistory(history []byte) ChatUsecase {
 	background := context.Background()
 
 	ctx, cancel := context.WithTimeout(background, 10*time.Second)
@@ -33,8 +37,16 @@ func NewGoChatUsecase() ChatUsecase {
 	}
 	defer cancel()
 
+	var h []*genai.Content = nil
+	if history != nil {
+		err = json.Unmarshal(history, &h)
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	ctx, cancel = context.WithTimeout(background, 10*time.Second)
-	chat, err := client.Chats.Create(ctx, "gemini-2.5-flash", nil, nil)
+	chat, err := client.Chats.Create(ctx, "gemini-2.5-flash", nil, h)
 	if err != nil {
 		panic(err)
 	}

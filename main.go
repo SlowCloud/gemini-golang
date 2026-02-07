@@ -15,7 +15,38 @@ import (
 func main() {
 
 	actions := map[string]func(){
-		"start chat": chat,
+		"start chat": func() { chat(nil) },
+		"select chat": func() {
+			historyFiles, err := getHistoryList()
+			if err != nil {
+				fmt.Println("Error getting history list:", err)
+				return
+			}
+			if len(historyFiles) == 0 {
+				fmt.Println("No chat history files found.")
+				return
+			}
+
+			historyOptions := make([]huh.Option[string], len(historyFiles))
+			for i, file := range historyFiles {
+				historyOptions[i] = huh.NewOption(file, file)
+			}
+			var selected string
+			form := huh.NewSelect[string]().
+				Title("Select Chat History").
+				Options(historyOptions...).
+				Value(&selected)
+
+			form.Run()
+
+			historyData, err := loadHistory(selected)
+			if err != nil {
+				fmt.Println("Error loading history:", err)
+				return
+			}
+
+			chat(historyData)
+		},
 	}
 
 	for {
@@ -44,9 +75,14 @@ func main() {
 
 }
 
-func chat() {
+func chat(history []byte) {
 
-	goChat := core.NewGoChatUsecase()
+	var goChat core.ChatUsecase
+	if history == nil {
+		goChat = core.NewGoChatUsecase()
+	} else {
+		goChat = core.NewGoChatUsecaseWithHistory(history)
+	}
 
 	for {
 		var s string
@@ -111,4 +147,32 @@ func saveHistory(history []byte) error {
 
 	fmt.Println("Chat history saved to", filename, "path ", dir)
 	return nil
+}
+
+func getHistoryList() ([]string, error) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+	files, err := os.ReadDir(dir)
+	if err != nil {
+		return nil, err
+	}
+	var historyFiles []string
+
+	for _, file := range files {
+		if !file.IsDir() && filepath.Ext(file.Name()) == ".txt" && len(file.Name()) >= 12 && file.Name()[:12] == "chat_history" {
+			historyFiles = append(historyFiles, file.Name())
+		}
+	}
+	return historyFiles, nil
+}
+
+func loadHistory(filename string) ([]byte, error) {
+	wd, err := os.Getwd()
+	data, err := os.ReadFile(filepath.Join(wd, filename))
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }
