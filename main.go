@@ -6,11 +6,10 @@ import (
 	"fmt"
 
 	"github.com/SlowCloud/gemini-golang/core"
-	"github.com/SlowCloud/gemini-golang/repository"
 	"github.com/charmbracelet/huh"
 )
 
-var repo core.Repository[[]byte] = repository.FileSystemRepository[[]byte]{}
+var repo core.Repository[[]byte] = core.FileSystemRepository[[]byte]{}
 
 func main() {
 
