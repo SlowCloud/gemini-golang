@@ -18,7 +18,7 @@ const (
 type FileSystemRepository struct {
 }
 
-func (f FileSystemRepository) getHistoryList() ([]string, error) {
+func (f FileSystemRepository) GetHistoryList() ([]string, error) {
 	dir, err := os.Getwd()
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func isHistoryFile(file os.DirEntry) bool {
 		file.Name()[:len(historyFilePref)] == historyFilePref
 }
 
-func (f FileSystemRepository) loadHistory(filename string) ([]byte, error) {
+func (f FileSystemRepository) LoadHistory(filename string) ([]byte, error) {
 	wd, err := os.Getwd()
 	data, err := os.ReadFile(filepath.Join(wd, filename))
 	if err != nil {
@@ -52,7 +52,7 @@ func (f FileSystemRepository) loadHistory(filename string) ([]byte, error) {
 	return data, nil
 }
 
-func (f FileSystemRepository) saveHistory(filename string, history []byte) error {
+func (f FileSystemRepository) SaveHistory(filename string, history []byte) error {
 	if history == nil {
 		fmt.Println("No history to save")
 		return nil
@@ -78,4 +78,4 @@ func (f FileSystemRepository) saveHistory(filename string, history []byte) error
 	return nil
 }
 
-var _ core.Repository = FileSystemRepository{}
+var _ core.Repository = (*FileSystemRepository)(nil)
