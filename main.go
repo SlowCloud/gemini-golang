@@ -4,13 +4,13 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
-	"time"
 
 	"github.com/SlowCloud/gemini-golang/core"
+	"github.com/SlowCloud/gemini-golang/repository"
 	"github.com/charmbracelet/huh"
 )
+
+var repo core.Repository = repository.FileSystemRepository{}
 
 func main() {
 
@@ -126,53 +126,13 @@ func chat(history []byte) {
 }
 
 func saveHistory(history []byte) error {
-	if history == nil {
-		fmt.Println("No history to save")
-		return nil
-	}
-
-	now := time.Now().Local().Format("2006-01-02_150405")
-	filename := fmt.Sprintf("chat_history-%s.txt", now)
-
-	dir, err := os.Getwd()
-	if err != nil {
-		fmt.Println("Error getting working directory:", err)
-		return err
-	}
-	err = os.WriteFile(filepath.Join(dir, filename), history, 0644)
-	if err != nil {
-		fmt.Println("Error writing history to file:", err)
-		return err
-	}
-
-	fmt.Println("Chat history saved to", filename, "path ", dir)
-	return nil
+	return repo.SaveHistory("", history)
 }
 
 func getHistoryList() ([]string, error) {
-	dir, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
-	files, err := os.ReadDir(dir)
-	if err != nil {
-		return nil, err
-	}
-	var historyFiles []string
-
-	for _, file := range files {
-		if !file.IsDir() && filepath.Ext(file.Name()) == ".txt" && len(file.Name()) >= 12 && file.Name()[:12] == "chat_history" {
-			historyFiles = append(historyFiles, file.Name())
-		}
-	}
-	return historyFiles, nil
+	return repo.GetHistoryList()
 }
 
 func loadHistory(filename string) ([]byte, error) {
-	wd, err := os.Getwd()
-	data, err := os.ReadFile(filepath.Join(wd, filename))
-	if err != nil {
-		return nil, err
-	}
-	return data, nil
+	return repo.LoadHistory(filename)
 }
