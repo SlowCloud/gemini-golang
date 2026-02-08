@@ -5,8 +5,8 @@ import (
 	"google.golang.org/genai"
 )
 
-type GoFileSystemRepository struct {
+type GeminiFileSystemRepository struct {
 	FileSystemRepository[[]*genai.Content]
 }
 
-var _ core.Repository[[]*genai.Content] = GoFileSystemRepository{}
+var _ core.Repository[[]*genai.Content] = GeminiFileSystemRepository{}
