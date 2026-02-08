@@ -78,4 +78,4 @@ func (f FileSystemRepository) SaveHistory(filename string, history []byte) error
 	return nil
 }
 
-var _ core.Repository = (*FileSystemRepository)(nil)
+var _ core.Repository[[]byte] = FileSystemRepository{}
