@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/SlowCloud/gemini-golang/core"
+	"github.com/SlowCloud/gemini-golang/gemini"
 	"github.com/SlowCloud/gemini-golang/repository"
 	"github.com/charmbracelet/huh"
 )
@@ -79,9 +80,9 @@ func chat(history []byte) {
 
 	var goChat core.ChatUsecase
 	if history == nil {
-		goChat = core.NewGoChatUsecase()
+		goChat = gemini.NewGoChatUsecase()
 	} else {
-		goChat = core.NewGoChatUsecaseWithHistory(history)
+		goChat = gemini.NewGoChatUsecaseWithHistory(history)
 	}
 
 	for {

@@ -1,10 +1,11 @@
-package core
+package gemini
 
 import (
 	"context"
 	"encoding/json"
 	"time"
 
+	"github.com/SlowCloud/gemini-golang/core"
 	"google.golang.org/genai"
 )
 
@@ -23,11 +24,11 @@ func (g geminiChatUsecase) GetHistory() ([]byte, error) {
 	return b, nil
 }
 
-func NewGoChatUsecase() ChatUsecase {
+func NewGoChatUsecase() core.ChatUsecase {
 	return NewGoChatUsecaseWithHistory(nil)
 }
 
-func NewGoChatUsecaseWithHistory(history []byte) ChatUsecase {
+func NewGoChatUsecaseWithHistory(history []byte) core.ChatUsecase {
 	background := context.Background()
 
 	ctx, cancel := context.WithTimeout(background, 10*time.Second)
@@ -79,4 +80,4 @@ func (g geminiChatUsecase) ChatStream(text string) (<-chan string, <-chan error)
 	return outputChan, errChan
 }
 
-var _ ChatUsecase = geminiChatUsecase{}
+var _ core.ChatUsecase = geminiChatUsecase{}
