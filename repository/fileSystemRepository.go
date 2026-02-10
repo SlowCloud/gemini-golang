@@ -19,11 +19,12 @@ type FileSystemRepository struct {
 }
 
 func (f FileSystemRepository) GetHistoryList() ([]string, error) {
-	dir, err := os.Getwd()
+	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		return nil, err
 	}
-	files, err := os.ReadDir(dir)
+	targetDir := filepath.Join(homeDir, historyDir)
+	files, err := os.ReadDir(targetDir)
 	if err != nil {
 		return nil, err
 	}
@@ -44,8 +45,12 @@ func isHistoryFile(file os.DirEntry) bool {
 }
 
 func (f FileSystemRepository) LoadHistory(filename string) ([]byte, error) {
-	wd, err := os.Getwd()
-	data, err := os.ReadFile(filepath.Join(wd, filename))
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return nil, err
+	}
+	targetDir := filepath.Join(homeDir, historyDir)
+	data, err := os.ReadFile(filepath.Join(targetDir, filename))
 	if err != nil {
 		return nil, err
 	}
@@ -63,18 +68,19 @@ func (f FileSystemRepository) SaveHistory(filename string, history []byte) error
 		filename = fmt.Sprintf("%s-%s%s", historyFilePref, now, historyFileExt)
 	}
 
-	dir, err := os.Getwd()
+	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		fmt.Println("Error getting working directory:", err)
+		fmt.Println("Error getting home directory:", err)
 		return err
 	}
-	err = os.WriteFile(filepath.Join(dir, filename), history, 0644)
+	targetDir := filepath.Join(homeDir, historyDir)
+	err = os.WriteFile(filepath.Join(targetDir, filename), history, 0644)
 	if err != nil {
 		fmt.Println("Error writing history to file:", err)
 		return err
 	}
 
-	fmt.Println("Chat history saved to", filename, "path ", dir)
+	fmt.Println("Chat history saved to", filename, "path ", targetDir)
 	return nil
 }
 
