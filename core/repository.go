@@ -1,7 +1,7 @@
 package core
 
-type Repository[T any] interface {
+type Repository interface {
 	GetHistoryList() ([]string, error)
-	LoadHistory(filename string) (T, error)
-	SaveHistory(filename string, history T) error
+	LoadHistory(filename string) ([]byte, error)
+	SaveHistory(filename string, history []byte) error
 }
