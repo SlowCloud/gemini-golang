@@ -1,4 +1,4 @@
-package core
+package repository
 
 import (
 	"encoding/json"
@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/SlowCloud/gemini-golang/core"
 )
 
 const (
@@ -88,4 +90,4 @@ func (f FileSystemRepository[T]) SaveHistory(filename string, history *T) error 
 	return nil
 }
 
-var _ Repository[any] = FileSystemRepository[any]{}
+var _ core.Repository[any] = FileSystemRepository[any]{}

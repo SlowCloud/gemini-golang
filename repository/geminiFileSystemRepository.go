@@ -6,7 +6,7 @@ import (
 )
 
 type GeminiFileSystemRepository struct {
-	core.FileSystemRepository[[]*genai.Content]
+	FileSystemRepository[[]*genai.Content]
 }
 
 var _ core.Repository[[]*genai.Content] = GeminiFileSystemRepository{}
