@@ -15,39 +15,42 @@ var repo core.Repository = repository.FileSystemRepository{}
 
 func main() {
 
+	startNewChat := func() { chat(nil) }
+	startWithExistChat := func() {
+		historyFiles, err := getHistoryList()
+		if err != nil {
+			fmt.Println("Error getting history list:", err)
+			return
+		}
+		if len(historyFiles) == 0 {
+			fmt.Println("No chat history files found.")
+			return
+		}
+
+		historyOptions := make([]huh.Option[string], len(historyFiles))
+		for i, file := range historyFiles {
+			historyOptions[i] = huh.NewOption(file, file)
+		}
+		var selected string
+		form := huh.NewSelect[string]().
+			Title("Select Chat History").
+			Options(historyOptions...).
+			Value(&selected)
+
+		form.Run()
+
+		historyData, err := loadHistory(selected)
+		if err != nil {
+			fmt.Println("Error loading history:", err)
+			return
+		}
+
+		chat(historyData)
+	}
+
 	actions := map[string]func(){
-		"start chat": func() { chat(nil) },
-		"select chat": func() {
-			historyFiles, err := getHistoryList()
-			if err != nil {
-				fmt.Println("Error getting history list:", err)
-				return
-			}
-			if len(historyFiles) == 0 {
-				fmt.Println("No chat history files found.")
-				return
-			}
-
-			historyOptions := make([]huh.Option[string], len(historyFiles))
-			for i, file := range historyFiles {
-				historyOptions[i] = huh.NewOption(file, file)
-			}
-			var selected string
-			form := huh.NewSelect[string]().
-				Title("Select Chat History").
-				Options(historyOptions...).
-				Value(&selected)
-
-			form.Run()
-
-			historyData, err := loadHistory(selected)
-			if err != nil {
-				fmt.Println("Error loading history:", err)
-				return
-			}
-
-			chat(historyData)
-		},
+		"start chat":  startNewChat,
+		"select chat": startWithExistChat,
 	}
 
 	for {
