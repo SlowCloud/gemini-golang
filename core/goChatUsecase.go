@@ -1,19 +1,18 @@
-package gemini
+package core
 
 import (
 	"context"
 	"encoding/json"
 	"time"
 
-	"github.com/SlowCloud/gemini-golang/core"
 	"google.golang.org/genai"
 )
 
-type geminiChatUsecase struct {
+type goChatUsecase struct {
 	chat *genai.Chat
 }
 
-func (g geminiChatUsecase) GetHistory() ([]byte, error) {
+func (g goChatUsecase) GetHistory() ([]byte, error) {
 	history := g.chat.History(false)
 
 	b, err := json.Marshal(history)
@@ -24,11 +23,11 @@ func (g geminiChatUsecase) GetHistory() ([]byte, error) {
 	return b, nil
 }
 
-func NewGoChatUsecase() core.ChatUsecase {
+func NewGoChatUsecase() ChatUsecase {
 	return NewGoChatUsecaseWithHistory(nil)
 }
 
-func NewGoChatUsecaseWithHistory(history []byte) core.ChatUsecase {
+func NewGoChatUsecaseWithHistory(history []byte) ChatUsecase {
 	background := context.Background()
 
 	ctx, cancel := context.WithTimeout(background, 10*time.Second)
@@ -53,14 +52,14 @@ func NewGoChatUsecaseWithHistory(history []byte) core.ChatUsecase {
 	}
 	defer cancel()
 
-	return geminiChatUsecase{chat}
+	return goChatUsecase{chat}
 }
 
-func (g geminiChatUsecase) Chat(text string) string {
+func (g goChatUsecase) Chat(text string) string {
 	panic("unimplemented")
 }
 
-func (g geminiChatUsecase) ChatStream(text string) (<-chan string, <-chan error) {
+func (g goChatUsecase) ChatStream(text string) (<-chan string, <-chan error) {
 	iter := g.chat.SendMessageStream(context.TODO(), genai.Part{Text: text})
 
 	outputChan := make(chan string)
@@ -80,4 +79,4 @@ func (g geminiChatUsecase) ChatStream(text string) (<-chan string, <-chan error)
 	return outputChan, errChan
 }
 
-var _ core.ChatUsecase = geminiChatUsecase{}
+var _ ChatUsecase = goChatUsecase{}
