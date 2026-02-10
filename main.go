@@ -10,7 +10,7 @@ import (
 	"github.com/charmbracelet/huh"
 )
 
-var repo core.Repository[[]byte] = repository.FileSystemRepository[[]byte]{}
+var repo core.Repository[[]byte] = repository.FileSystemRepository{}
 
 func main() {
 
@@ -45,7 +45,7 @@ func main() {
 				return
 			}
 
-			chat(*historyData)
+			chat(historyData)
 		},
 	}
 
@@ -126,13 +126,13 @@ func chat(history []byte) {
 }
 
 func saveHistory(history []byte) error {
-	return repo.SaveHistory("", &history)
+	return repo.SaveHistory("", history)
 }
 
 func getHistoryList() ([]string, error) {
 	return repo.GetHistoryList()
 }
 
-func loadHistory(filename string) (*[]byte, error) {
+func loadHistory(filename string) ([]byte, error) {
 	return repo.LoadHistory(filename)
 }

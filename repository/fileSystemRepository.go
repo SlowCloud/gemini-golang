@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -16,10 +15,10 @@ const (
 	historyFileExt  = ".txt"
 )
 
-type FileSystemRepository[T any] struct {
+type FileSystemRepository struct {
 }
 
-func (f FileSystemRepository[T]) GetHistoryList() ([]string, error) {
+func (f FileSystemRepository) GetHistoryList() ([]string, error) {
 	dir, err := os.Getwd()
 	if err != nil {
 		return nil, err
@@ -44,30 +43,19 @@ func isHistoryFile(file os.DirEntry) bool {
 		file.Name()[:len(historyFilePref)] == historyFilePref
 }
 
-func (f FileSystemRepository[T]) LoadHistory(filename string) (*T, error) {
+func (f FileSystemRepository) LoadHistory(filename string) ([]byte, error) {
 	wd, err := os.Getwd()
 	data, err := os.ReadFile(filepath.Join(wd, filename))
 	if err != nil {
 		return nil, err
 	}
-
-	var result T
-	err = json.Unmarshal(data, &result)
-	if err != nil {
-		return nil, err
-	}
-	return &result, nil
+	return data, nil
 }
 
-func (f FileSystemRepository[T]) SaveHistory(filename string, history *T) error {
+func (f FileSystemRepository) SaveHistory(filename string, history []byte) error {
 	if history == nil {
 		fmt.Println("No history to save")
 		return nil
-	}
-
-	bytes, ok := any(history).([]byte)
-	if !ok {
-		return fmt.Errorf("invalid history type, expected []byte")
 	}
 
 	now := time.Now().Local().Format("2006-01-02_150405")
@@ -80,7 +68,7 @@ func (f FileSystemRepository[T]) SaveHistory(filename string, history *T) error 
 		fmt.Println("Error getting working directory:", err)
 		return err
 	}
-	err = os.WriteFile(filepath.Join(dir, filename), bytes, 0644)
+	err = os.WriteFile(filepath.Join(dir, filename), history, 0644)
 	if err != nil {
 		fmt.Println("Error writing history to file:", err)
 		return err
@@ -90,4 +78,4 @@ func (f FileSystemRepository[T]) SaveHistory(filename string, history *T) error 
 	return nil
 }
 
-var _ core.Repository[any] = FileSystemRepository[any]{}
+var _ core.Repository[[]byte] = FileSystemRepository{}
