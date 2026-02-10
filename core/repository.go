@@ -1,12 +1,7 @@
 package core
 
-type Repository interface {
+type Repository[T any] interface {
 	GetHistoryList() ([]string, error)
-	LoadHistory(filename string) ([]Message, error)
-	SaveHistory(filename string, history []Message) error
-}
-
-type Message struct {
-	Message string
-	Role    string
+	LoadHistory(filename string) (*T, error)
+	SaveHistory(filename string, history *T) error
 }

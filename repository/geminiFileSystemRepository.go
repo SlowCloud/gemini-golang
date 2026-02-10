@@ -1,0 +1,13 @@
+package repository
+
+import (
+	"github.com/SlowCloud/gemini-golang/core"
+	"google.golang.org/genai"
+)
+
+type GeminiFileSystemRepository struct {
+	core.FileSystemRepository[[]*genai.Content]
+}
+
+var _ core.Repository[[]*genai.Content] = GeminiFileSystemRepository{}
+var _ GeminiRepository = GeminiFileSystemRepository{}
