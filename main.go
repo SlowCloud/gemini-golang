@@ -11,7 +11,7 @@ import (
 	"github.com/charmbracelet/huh"
 )
 
-var repo core.Repository[[]byte] = repository.FileSystemRepository{}
+var repo core.Repository = repository.FileSystemRepository{}
 
 func main() {
 
