@@ -14,10 +14,10 @@ const (
 	historyFileExt  = ".txt"
 )
 
-type FileSystemRepository[T any] struct {
+type FileSystemRepository struct {
 }
 
-func (f FileSystemRepository[T]) GetHistoryList() ([]string, error) {
+func (f FileSystemRepository) GetHistoryList() ([]string, error) {
 	dir, err := os.Getwd()
 	if err != nil {
 		return nil, err
@@ -42,22 +42,22 @@ func isHistoryFile(file os.DirEntry) bool {
 		file.Name()[:len(historyFilePref)] == historyFilePref
 }
 
-func (f FileSystemRepository[T]) LoadHistory(filename string) (*T, error) {
+func (f FileSystemRepository) LoadHistory(filename string) ([]Message, error) {
 	wd, err := os.Getwd()
 	data, err := os.ReadFile(filepath.Join(wd, filename))
 	if err != nil {
 		return nil, err
 	}
 
-	var result T
+	var result []Message
 	err = json.Unmarshal(data, &result)
 	if err != nil {
 		return nil, err
 	}
-	return &result, nil
+	return result, nil
 }
 
-func (f FileSystemRepository[T]) SaveHistory(filename string, history *T) error {
+func (f FileSystemRepository) SaveHistory(filename string, history []Message) error {
 	if history == nil {
 		fmt.Println("No history to save")
 		return nil
@@ -88,4 +88,4 @@ func (f FileSystemRepository[T]) SaveHistory(filename string, history *T) error 
 	return nil
 }
 
-var _ Repository[any] = FileSystemRepository[any]{}
+var _ Repository = FileSystemRepository{}
