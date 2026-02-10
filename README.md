@@ -30,18 +30,6 @@ $env:GOOGLE_API_KEY=YOUR_GEMINI_API_KEY
 go install github.com/SlowCloud/gemini-golang@latest
 ```
 
-## Features
-
-- Gemini API 활용한 채팅 기능
-- 채팅 저장 기능
-    - `~/histories`에 저장됩니다.
-- 저장된 채팅을 선택하여 이어서 채팅을 진행하는 기능
-
-## Roadmap
-
-- Gemini 모델 선택 기능
-- Gemini 이외의 AI 모델 활용 기능
-
 ## reference
 
 https://pkg.go.dev/google.golang.org/genai
