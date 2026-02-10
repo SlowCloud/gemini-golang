@@ -2,7 +2,6 @@ package gemini
 
 import (
 	"context"
-	"encoding/json"
 	"time"
 
 	"github.com/SlowCloud/gemini-golang/core"
@@ -13,22 +12,7 @@ type geminiChatUsecase struct {
 	chat *genai.Chat
 }
 
-func (g geminiChatUsecase) GetHistory() ([]byte, error) {
-	history := g.chat.History(false)
-
-	b, err := json.Marshal(history)
-	if err != nil {
-		return nil, err
-	}
-
-	return b, nil
-}
-
 func NewGoChatUsecase() core.ChatUsecase {
-	return NewGoChatUsecaseWithHistory(nil)
-}
-
-func NewGoChatUsecaseWithHistory(history []byte) core.ChatUsecase {
 	background := context.Background()
 
 	ctx, cancel := context.WithTimeout(background, 10*time.Second)
@@ -38,16 +22,8 @@ func NewGoChatUsecaseWithHistory(history []byte) core.ChatUsecase {
 	}
 	defer cancel()
 
-	var h []*genai.Content = nil
-	if history != nil {
-		err = json.Unmarshal(history, &h)
-		if err != nil {
-			panic(err)
-		}
-	}
-
 	ctx, cancel = context.WithTimeout(background, 10*time.Second)
-	chat, err := client.Chats.Create(ctx, "gemini-2.5-flash", nil, h)
+	chat, err := client.Chats.Create(ctx, "gemini-2.5-flash", nil, nil)
 	if err != nil {
 		panic(err)
 	}
