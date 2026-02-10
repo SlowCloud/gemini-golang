@@ -10,4 +10,3 @@ type GeminiFileSystemRepository struct {
 }
 
 var _ core.Repository[[]*genai.Content] = GeminiFileSystemRepository{}
-var _ GeminiRepository = GeminiFileSystemRepository{}
