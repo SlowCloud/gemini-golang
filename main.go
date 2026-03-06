@@ -5,13 +5,12 @@ package main
 import (
 	"fmt"
 
-	"github.com/SlowCloud/gemini-golang/gemini"
 	"github.com/charmbracelet/huh"
 )
 
 func main() {
 
-	goChat := gemini.NewGoChatUsecase()
+	goChat := NewGoChatUsecase()
 
 	for {
 		var s string
